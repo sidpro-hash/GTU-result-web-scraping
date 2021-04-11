@@ -2,7 +2,8 @@
 
 ## Requirements
 
-- Chrome, Firefox Driver is required
+- [Chrome, Firefox Driver is required](https://chromedriver.chromium.org/downloads)
+- [Tesseract OCR is required](https://github.com/UB-Mannheim/tesseract/wiki)
 - All import on top just pip install it.
 - You are ready to go.
 
