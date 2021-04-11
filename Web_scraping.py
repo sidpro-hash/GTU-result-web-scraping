@@ -8,6 +8,8 @@ import sqlite3
 #from selenium.webdriver.chrome.options import Options
 import time
 
+# set path of tesseract
+pytesseract.pytesseract.tesseract_cmd = r'F:\SOFT\tessreact\tesseract.exe'
 
 class Gtu:
     def __init__(self):
@@ -21,9 +23,8 @@ class Gtu:
         c = conn.cursor()
 
         # creating table if not exist
-        c.execute('''CREATE TABLE IF NOT EXISTS results (enrollment real, name text,
-                   CPI real, SPI real, Current_Backlog text, Total Backlog text)
-                   PRIMARY KEY(enrollment)''')
+        c.execute('''CREATE TABLE IF NOT EXISTS results(enrollment real PRIMARY KEY, name text,
+                   CPI real, SPI real, Current_Backlog text, Total_Backlog text)''')
 
         # Insert a row of data
         insert_query = f"INSERT OR IGNORE INTO results VALUES (?, ?, ?, ?, ?, ?)"
@@ -84,31 +85,34 @@ class Gtu:
 
     # Main Method & is called
     def main(self):
-        before = time.time_ns()
+        before = time.time()
 
         #chrome_options = Options()
         #chrome_options.add_argument('--headless')
 
         # Chrome Driver for selenium put your driver path
-        driver = webdriver.Chrome("/home/smit/Downloads/chromedriver_linux64/chromedriver")
+        driver = webdriver.Chrome("F:\SOFT\chrome webdriver\chromedriver")
         # Accessing gtu result web site
-        driver.get("https://www.gturesults.in/Default.aspx?ext=archive")
-
+        driver.get("https://www.gturesults.in/Default.aspx?ext=W2020&rof=2716&ext=W2020&rof=2716")
+        # https://www.gturesults.in/Default.aspx?ext=archive
+        # https://www.gturesults.in/Default.aspx?ext=W2020&rof=2716&ext=W2020&rof=2716
         # Giving Session
-        session = driver.find_element_by_id('ddlsession')
+        
+        ''' session is needed when there is option for selection otherwise not '''
+        #session = driver.find_element_by_id('ddlsession')
         # add year as appeared in site
-        session.send_keys('Winter 2019')
+        #session.send_keys('Winter 2020')
 
         # Entering BE Sem-4 Regular batch
         batch = driver.find_element_by_id('ddlbatch')
         # send your result name as appeared in GTUresult site
-        batch.send_keys('.....DIPL SEM 1 - Regular (DEC 2019)')
+        batch.send_keys('.....BE SEM 5 - Regular (JAN 2021)')
 
         # defining enrollment range
-        #put your starting enrollment
-        enrollment = 196400319000
+        #put your starting enrollment 
+        enrollment = 180170107000
         # {no} represents total number of students
-        no = 157
+        no = 81
 
         # count for invalid captcha code trials
         count = 0
@@ -122,7 +126,7 @@ class Gtu:
             enroll.clear()
             time.sleep(2)
             enroll.send_keys(str(enrollment + no))
-
+            print(str(enrollment + no))
             im = self.screenshot(driver)
             text = self.text_captcha(im)
 
@@ -185,13 +189,13 @@ class Gtu:
         driver.delete_all_cookies()
         # Closing driver automatically
         driver.close()
-        after = time.time_ns()
+        after = time.time()
 
         print("Data Extracted \nClosing Browser............\n")
         # Printing Summary of Program
         print("Browser Closed \n Check Database for data")
         print("============Summary=============")
-        print(f"Total time taken : {after - before}")
+        print(f"Total time taken : {((after - before)/60)} Minutes")
         print(f"Total incorrect captcha : {count}")
 
 
